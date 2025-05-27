@@ -1,0 +1,126 @@
+const products = [
+    { name: "Rosas Vermelhas", price: "R$ 250,00", image: "https://www.donaflorindafloricultura.com.br/wp-content/uploads/2019/05/buque-flores-vermelhas-2.jpeg", description: "Um buquê clássico e apaixonante de rosas vermelhas, perfeito para expressar amor e admiração.", category: "buques" },
+    { name: "Buquê Misto Campo", price: "R$ 280,00", image: "https://cactusfloricultura.com.br/wp-content/uploads/2020/01/20200316_185845-scaled.jpg", description: "Uma alegre combinação de flores variadas, trazendo a beleza natural de um campo florido para sua casa.", category: "buques" },
+    { name: "Rosas e Gipsofilas", price: "R$ 300,00", image: "https://floriculturaflorianopolis.com.br/wp-content/uploads/2022/05/Buque-de-Flores-Florianopolis-Rosas-Importadas-977x1024.jpeg", description: "A delicadeza das gipsofilas complementa a beleza das rosas, criando um arranjo romântico e sofisticado.", category: "arranjos" },
+    { name: "Flores Tropicais Vibrantes", price: "R$ 290,00", image: "https://www.cestaeflor.com.br/wp-content/uploads/2018/01/Buque-flores-nobres-color.jpg", description: "Um explosão de cores e formas exóticas, ideal para quem ama a vivacidade e energia da flora tropical.", category: "arranjos" },
+    { name: "Suspiro do Amor", price: "R$ 280,00", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQccruJaJaV3OWqA2DfbKXiHu99wiwRSQ8nWQ&s", description: "Um arranjo suave e gracioso que transmite carinho e afeto, com tons pastéis e flores delicadas.", category: "presentes" },
+    { name: "Buquê Elegância Branca", price: "R$ 230,00", image: "https://taquariflores.com.br/wp-content/uploads/2022/09/buque-de-flores-com-12-lirios-brancos2.jpg", description: "Lírios brancos puros e elegantes, um símbolo de paz e pureza, perfeito para ocasiões especiais.", category: "buques" },
+    { name: "Rosas do Encanto", price: "R$ 300,00", image: "https://cactusfloricultura.com.br/wp-content/uploads/2022/04/9ad9bc0c-af4f-4783-8149-a102266dfbd2.jpg", description: "Rosas em tons diversos, cada uma com seu encanto particular, formando um presente inesquecível.", category: "buques" },
+    { name: "Buquê Rosas Mista", price: "R$ 300,00", image: "https://floriculturabellavita.com.br/634-thickbox_default/buque-de-flores-mistas-com-rosas.jpg", description: "Uma mistura vibrante de rosas coloridas, trazendo alegria e diversidade em um único buquê.", category: "buques" },
+    { name: "Buquê Noite Romântica", price: "R$ 350,00", image: "https://www.uniflores.com.br/media/catalog/product/cache/1/image/1800x/040ec09b1e35df139433887a97daa66f/1/0/101_colour2.jpg", description: "Flores em tons profundos e envolventes, criadas para uma noite especial e memorável a dois.", category: "arranjos" },
+    { name: "Buquê Amor Clássico", price: "R$ 450,00", image: "https://patriciaflores.com.br/wp-content/uploads/2023/03/buque_de_flores_rosas_classic_linha_premium_franca_sp.webp", description: "Rosas vermelhas de alta qualidade, um buquê luxuoso que representa o amor eterno e incondicional.", category: "presentes" },
+]; 
+
+function displayProducts(filteredProducts) {
+    const productList = document.getElementById("product-list");
+    productList.innerHTML = "";
+    if (filteredProducts.length === 0) {
+        document.getElementById("message").textContent = "Nenhum produto encontrado!";
+        return;
+    }
+    document.getElementById("message").textContent = "";
+    filteredProducts.forEach(product => {
+        const productDiv = document.createElement("div");
+        productDiv.classList.add("product");
+        productDiv.innerHTML = `
+            <img src="${product.image}" alt="${product.name}">
+            <div class="product-info">
+                <h3>${product.name}</h3>
+                <p class="product-description">${product.description}</p>
+                <p class="product-price">${product.price}</p>
+            </div>
+        `;
+        productList.appendChild(productDiv);
+    });
+}
+function searchProduct() {
+    const searchTerm = document.getElementById("search-input").value.toLowerCase();
+    if (searchTerm === "") {
+        document.getElementById("message").textContent = "Por favor, digite um termo de pesquisa!";
+        displayProducts(products);
+        return;
+    }
+    const filteredProducts = products.filter(product =>
+        product.name.toLowerCase().includes(searchTerm) ||
+        product.description.toLowerCase().includes(searchTerm)
+    );
+    displayProducts(filteredProducts);
+}
+const categoryButtons = document.querySelectorAll(".category-btn");
+categoryButtons.forEach(button => {
+    button.addEventListener("click", function() {
+        categoryButtons.forEach(btn => btn.classList.remove("active"));
+        this.classList.add("active");
+        const category = this.dataset.category;
+        if (category === "todos") {
+            displayProducts(products);
+        } else {
+            const filtered = products.filter(product => product.category === category);
+            displayProducts(filtered);
+        }
+    });
+});
+const loginModal = document.getElementById("login-modal");
+const loginButton = document.getElementById("login-button");
+const welcomeMessage = document.getElementById("welcome-message");
+const loginForm = document.getElementById("login-form");
+const emailInput = document.getElementById("email");
+const passwordInput = document.getElementById("password");
+const loginMessage = document.getElementById("login-message");
+let currentUser = null; 
+function openLoginModal() {
+    loginModal.style.display = "flex";
+    loginMessage.textContent = "";
+    emailInput.value = "";
+    passwordInput.value = "";
+}
+function closeLoginModal() {
+    loginModal.style.display = "none";
+}
+window.onclick = function(event) {
+    if (event.target == loginModal) {
+        closeLoginModal();
+    }
+}
+loginForm.addEventListener("submit", function(event) {
+    event.preventDefault();
+    const email = emailInput.value;
+    const password = passwordInput.value;
+    if (email === "test@gmail.com" && password === "123456") {
+        currentUser = { email: email, name: "Usuário Teste" };
+        loginMessage.textContent = "";
+        closeLoginModal();
+        updateUIForLoggedInUser();
+    } else {
+        loginMessage.textContent = "E-mail ou senha incorretos. Tente novamente.";
+    }
+});
+function updateUIForLoggedInUser() {
+    if (currentUser) {
+        loginButton.style.display = "none";
+        welcomeMessage.textContent = `Olá, ${currentUser.name}!`;
+        welcomeMessage.style.display = "inline";
+        let logoutButton = document.getElementById("logout-button");
+        if (!logoutButton) {
+            logoutButton = document.createElement("button");
+            logoutButton.id = "logout-button";
+            logoutButton.textContent = "Sair";
+            logoutButton.onclick = logoutUser;
+            loginButton.parentNode.appendChild(logoutButton);
+        }
+    } else {
+        loginButton.style.display = "inline";
+        welcomeMessage.style.display = "none";
+        welcomeMessage.textContent = "";
+        const logoutButton = document.getElementById("logout-button");
+        if (logoutButton) {
+            logoutButton.remove();
+        }
+    }
+}
+function logoutUser() {
+    currentUser = null;
+    updateUIForLoggedInUser();
+    document.getElementById("message").textContent = "Você foi desconectado.";
+}
+window.onload = () => displayProducts(products);
